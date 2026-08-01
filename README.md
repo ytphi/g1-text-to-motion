@@ -21,20 +21,71 @@ texedo_to_sonic.py -> SONIC visualize_motion.py
 - `verified_motions/` — saved motions (source `.npy` + converted SONIC CSVs + the
   prompt/generation params used), one folder per motion name
 
-## Prerequisites
+## Prerequisites (setup instructions for students)
 
-Expects both dependencies cloned as siblings under `~/robotics/platforms/unitree/`:
+This repo only contains the glue code — it does **not** include TEXEDO or
+GR00T-WholeBodyControl themselves. You need to clone both of those as sibling
+folders next to this repo before anything will run. Follow these steps in order.
+
+### Step 1 — Clone this repo and its two dependencies as siblings
+
+```bash
+mkdir -p ~/robotics/platforms/unitree
+cd ~/robotics/platforms/unitree
+
+git clone https://github.com/ytphi/g1-text-to-motion.git
+git clone https://github.com/JianuoCao/TEXEDO.git
+git clone https://github.com/NVlabs/GR00T-WholeBodyControl.git
+```
+
+You should now have exactly this layout (the scripts hardcode these paths, so the
+folder names and nesting must match):
 
 ```
 ~/robotics/platforms/unitree/
-├── TEXEDO/                      (with a .venv, see its own setup instructions)
-├── GR00T-WholeBodyControl/      (SONIC deploy code + assets)
-└── g1-text-to-motion/           (this repo)
+├── TEXEDO/
+├── GR00T-WholeBodyControl/
+└── g1-text-to-motion/
 ```
 
+### Step 2 — Set up TEXEDO
+
+`text_to_motion_live.py` calls TEXEDO through a **virtualenv**, specifically
+`TEXEDO/.venv/bin/python` — not a conda env — so create it with `venv`, not
+`conda env create`, or the script won't find the interpreter:
+
 ```bash
+cd ~/robotics/platforms/unitree/TEXEDO
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+Then download TEXEDO's checkpoints and assets (this pulls model weights + G1
+robot assets, so it can take a while and use a few GB of disk):
+
+```bash
+python scripts/download_assets.py --dry-run   # preview what will download first
+python scripts/download_assets.py             # actually download
+deactivate
+```
+
+### Step 3 — Set up GR00T-WholeBodyControl (SONIC)
+
+Follow GR00T-WholeBodyControl's own README/docs to install its dependencies and
+set up the `gear_sonic_deploy/` sim2sim MuJoCo deployment — this repo doesn't
+duplicate those instructions since they change independently of this project.
+
+### Step 4 — Install this repo's own (small) dependencies
+
+```bash
+cd ~/robotics/platforms/unitree/g1-text-to-motion
 pip install -r requirements.txt
 ```
+
+If `python3 scripts/text_to_motion_live.py` (see Usage below) fails immediately,
+the most common cause is one of the three folders above being misnamed or
+missing — double check the layout in Step 1 first.
 
 ## Usage
 
