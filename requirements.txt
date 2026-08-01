@@ -1,0 +1,2 @@
+numpy
+matplotlib  # optional, only needed for inspect_joint_activity.py --plot
