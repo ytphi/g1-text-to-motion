@@ -79,7 +79,7 @@ duplicate those instructions since they change independently of this project.
 ### Step 4 — Install this repo's own (small) dependencies
 
 ```bash
-cd ~/robotics/platforms/unitree/g1-text-to-motion
+cd ~/robotics/platforms/unitree/g1/g1-text-to-motion
 pip install -r requirements.txt
 ```
 

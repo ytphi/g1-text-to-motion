@@ -34,6 +34,12 @@ TEXEDO_VENV_PYTHON = TEXEDO_DIR / ".venv/bin/python"
 SONIC_DEPLOY_DIR = Path.home() / "robotics/platforms/unitree/GR00T-WholeBodyControl/gear_sonic_deploy"
 CONVERTER = Path(__file__).resolve().parent / "texedo_to_sonic.py"
 REPO_ROOT = Path(__file__).resolve().parent.parent
+# The SONIC MuJoCo viewer (visualize_motion.py) needs mujoco/scipy/mink/etc. Launch it
+# with a Python that has them: $SONIC_VIEWER_PYTHON, else the texedo310 conda env if
+# present, else this interpreter.
+_TEXEDO310 = Path.home() / "dev/python/miniconda3/envs/texedo310/bin/python"
+SONIC_VIEWER_PYTHON = Path(os.environ.get("SONIC_VIEWER_PYTHON",
+                                          _TEXEDO310 if _TEXEDO310.exists() else sys.executable))
 VERIFIED_MOTIONS_DIR = REPO_ROOT / "verified_motions"
 
 CANDIDATES_DIR = Path("/tmp/texedo_live_candidates")
@@ -115,7 +121,7 @@ def relaunch_viewer(viewer_proc, motion_dir: Path):
 
     rel_motion_dir = motion_dir.relative_to(SONIC_DEPLOY_DIR)
     return subprocess.Popen(
-        [sys.executable, "visualize_motion.py", "--motion_dir", str(rel_motion_dir)],
+        [str(SONIC_VIEWER_PYTHON), "visualize_motion.py", "--motion_dir", str(rel_motion_dir)],
         cwd=SONIC_DEPLOY_DIR,
     )
 
